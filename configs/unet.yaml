@@ -1,0 +1,49 @@
+# UNet Configuration
+model:
+  type: 'unet'
+  input_channels: 1
+  base_channels: 64
+  upsampling_factor: 2
+  num_levels: 4
+
+data:
+  sample_rate: 16000
+  target_sample_rate: 32000
+  segment_length: 16384
+  batch_size: 8
+  num_workers: 4
+  augment: true
+  noise_factor: 0.1
+  pitch_shift_range: [-2.0, 2.0]
+  time_stretch_range: [0.9, 1.1]
+
+training:
+  num_epochs: 150
+  learning_rate: 0.0005
+  weight_decay: 1e-4
+  optimizer: 'adamw'
+  scheduler: 'cosine'
+  scheduler_params:
+    T_max: 150
+    eta_min: 1e-6
+  early_stopping:
+    patience: 15
+    min_delta: 0.001
+
+loss:
+  type: 'multiscale'
+  time_weight: 1.0
+  spectral_weight: 0.2
+  perceptual_weight: 0.1
+  scales: [1, 2, 4, 8]
+
+evaluation:
+  metrics: ['pesq', 'stoi', 'si_sdr', 'snr', 'spectral_mse', 'spectral_l1']
+  sample_rate: 16000
+
+logging:
+  level: 'INFO'
+  log_interval: 50
+
+device: 'auto'
+seed: 42
